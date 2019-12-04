@@ -1,0 +1,24 @@
+********************************
+*Information for reliability
+********************************
+*
+* NVAR   NPAR  NCOR   MAXIT (求解可靠指标时最大迭代次数，可改）
+   2 ,   2 ,    0 ,   1
+*
+* STOCHASTIC VARIABLES
+*
+* No  ID   ITYPE   MY       SIGMA      P3     P4         
+  1,  X1 ,  2,    5.,      0.6,       0. ,   0. 
+  2,  X2 ,  2,    5.,      0.6,       0. ,   0. 
+*
+* CORRELATION COEFFICIENTS
+*
+*Number of correlation coefficients
+* variabel 1,  variabel 2,  corr. coeff.
+*
+* CONSTANT PARAMETERS
+*
+* No  ID     value      lower       upper             
+  1,  D1 ,      5.0,      0.0,       10.
+  2,  D2 ,      5.0,      0.0,       10.
+

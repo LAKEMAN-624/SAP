@@ -1,0 +1,1062 @@
+
+      SUBROUTINE DOT100 (INFO,NDV,NCON,OBJ,X,XL,XU,G,
+     1WK,IWK,ALPHA,ALPMAX,RPRM,IPRM,IPOINT,IPRNT2,SLOPF,MINMAX)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION X(*),XL(*),XU(*),G(*),WK(*),IWK(*),RPRM(*),
+     *IPRM(*),IPOINT(*),DUMMY(1)
+      N=IPOINT(27)
+      ALPL=WK(N+4)
+      ALPU=WK(N+5)
+      ALPBST=WK(N+6)
+      ALPU1=WK(N+7)
+      F1=WK(N+8)
+      F2=WK(N+9)
+      FBST=WK(N+10)
+      FL=WK(N+11)
+      FU=WK(N+12)
+      GBST=WK(N+13)
+      GMCT1=WK(N+14)
+      GMCT2=WK(N+15)
+      GMCTL=WK(N+16)
+      GMCTU=WK(N+17)
+      XX1=WK(N+18)
+      XX2=WK(N+19)
+      XXL=WK(N+20)
+      XXU=WK(N+21)
+      FLAST=WK(N+22)
+      GLAST=WK(N+23)
+      N=IPOINT(35)
+      KGOTO=IWK(N+9)
+      ICAL=IWK(N+10)
+      II=IWK(N+11)
+      JGOTO=IWK(N+12)
+      JJ=IWK(N+13)
+      CTMIN=RPRM(2)
+      IWRITE=IPRM(5)
+      NS=IPOINT(6)
+      NXOLD=IPOINT(7)
+      NGL=IPOINT(10)
+      NG1=IPOINT(11)
+      NG2=IPOINT(12)
+      NGU=IPOINT(13)
+      NXBST=IPOINT(19)
+      NSCALX=IPOINT(20)
+      IF (IPRNT2.GT.1) THEN
+         IF (INFO.EQ.0) THEN
+            WRITE (IWRITE,120)
+            IF (NCON.EQ.0) WRITE (IWRITE,60)
+            IF (NCON.GT.0) WRITE (IWRITE,70)
+            Z=0.
+            WRITE (IWRITE,135) Z,ALPMAX
+         ENDIF
+         OBJT=OBJ
+         IF(MINMAX.GT.0) OBJT=-OBJT
+         IF (INFO.EQ.0) WRITE (IWRITE,140) OBJT
+         ICALC=1
+         JSCAL=1
+         IF (INFO.EQ.0) CALL DOT502 (ICALC,X,NDV,IWRITE,JSCAL,
+     *   WK(NSCALX))
+         IF (INFO.EQ.1) WRITE (IWRITE,140) OBJT
+         ICALC=4
+         JSCAL=0
+         IF (NCON.GT.0) CALL DOT502 (ICALC,G,NCON,IWRITE,JSCAL,
+     *   DUMMY)
+      ENDIF
+      IF (INFO.EQ.0) KGOTO=0
+      IF (NCON.EQ.0) THEN
+      CALL DOT115 (KGOTO,IPRNT2,NDV,OBJ,SLOPF,ALPHA,ALPMAX,
+     1WK(NXOLD),XL,XU,WK(NS),X,WK(NXBST),IWRITE,WK(NSCALX),ALPBST,
+     2ALPL,ALPU,F1,F2,FBST,FL,FU,XX1,XX2,XXL,XXU,ICAL,II,JGOTO)
+         ELSE
+         CALL DOT101(KGOTO,IPRNT2,NDV,NCON,OBJ,CTMIN,ALPHA,ALPMAX,
+     1   ALPL,ALPU,WK(NXOLD),XL,XU,WK(NS),X,G,WK(NGL),WK(NG1),
+     2   WK(NG2),WK(NGU),WK(NXBST),SLOPF,
+     3   IWRITE,WK(NSCALX),ALPU1,F1,F2,FBST,FL,FU,GBST,GMCT1,
+     4   GMCT2,GMCTL,GMCTU,XX1,XX2,XXL,XXU,FLAST,GLAST,ALPBST,ICAL,
+     5   II,JGOTO,JJ)
+      ENDIF
+      INFO=1
+      IF (KGOTO.EQ.0) INFO=0
+      IF (IPRNT2.GT.1) THEN
+         IF(INFO.EQ.0) WRITE(IWRITE,145)
+         WRITE (IWRITE,130) ALPHA
+         OBJT=OBJ
+         IF(MINMAX.GT.0) OBJT=-OBJT
+         IF(INFO.EQ.0) WRITE(IWRITE,140) OBJT
+         ICALC=1
+         JSCAL=1
+         CALL DOT502 (ICALC,X,NDV,IWRITE,JSCAL,WK(NSCALX))
+         ICALC=4
+         JSCAL=0
+         IF (INFO.EQ.0.AND.NCON.GT.0) CALL DOT502 (ICALC,G,NCON,
+     *   IWRITE,JSCAL,DUMMY)
+         IF (INFO.EQ.0) WRITE (IWRITE,150)
+      ENDIF
+      N=IPOINT(27)+4
+      WK(N)=ALPL
+      N=N+1
+      WK(N)=ALPU
+      N=N+1
+      WK(N)=ALPBST
+      N=N+1
+      WK(N)=ALPU1
+      N=N+1
+      WK(N)=F1
+      N=N+1
+      WK(N)=F2
+      N=N+1
+      WK(N)=FBST
+      N=N+1
+      WK(N)=FL
+      N=N+1
+      WK(N)=FU
+      N=N+1
+      WK(N)=GBST
+      N=N+1
+      WK(N)=GMCT1
+      N=N+1
+      WK(N)=GMCT2
+      N=N+1
+      WK(N)=GMCTL
+      N=N+1
+      WK(N)=GMCTU
+      N=N+1
+      WK(N)=XX1
+      N=N+1
+      WK(N)=XX2
+      N=N+1
+      WK(N)=XXL
+      N=N+1
+      WK(N)=XXU
+      N=N+1
+      WK(N)=FLAST
+      N=N+1
+      WK(N)=GLAST
+      N=IPOINT(35)+9
+      IWK(N)=KGOTO
+      N=N+1
+      IWK(N)=ICAL
+      N=N+1
+      IWK(N)=II
+      N=N+1
+      IWK(N)=JGOTO
+      N=N+1
+      IWK(N)=JJ
+      RETURN
+60    FORMAT (/,2X,'UNCONSTRAINED FUNCTION')
+70    FORMAT (/,2X,'CONSTRAINED FUNCTION')
+120   FORMAT (//,2X,'* * * * * BEGIN ONE-DIMENSIONAL SEARCH * * * * *')
+130   FORMAT (/,2X,'ALPHA =',1PE13.5)
+135   FORMAT (/,2X,'ALPHA =',1PE13.5,4X,'ALPMAX =',1PE13.5)
+140   FORMAT (/,2X,'OBJ =',1PE13.5)
+145   FORMAT (/,2X,'--- RESULTS OF ONE-DIMENSIONAL SEARCH')
+150   FORMAT (/,2X,'* * * * * END OF ONE-DIMENSIONAL SEARCH * * * * *')
+      END
+      SUBROUTINE DOT101 (IGOTO,IPRNT2,NDV,NCON,OBJ,CTMIN,ALPHA,
+     1ALPMAX,ALPL,ALPU,XOLD,XL,XU,S,X,G,GGL,GG1,GG2,GGU,XBST,
+     2SLOPF,IWRITE,SCALX,ALPU1,F1,F2,FBST,FL,FU,
+     3GBST,GMCT1,GMCT2,GMCTL,GMCTU,XX1,XX2,XXL,XXU,FLAST,GLAST,
+     4ALPBST,ICAL,II,JGOTO,JJ)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION X(*),S(*),XOLD(*),XL(*),XU(*),G(*),GGL(*),
+     1GG1(*),GG2(*),GGU(*),XBST(*),SCALX(*)
+      ZRO=1.0E-6
+      YP1=0.
+      CALL DOT402 (NCON,G,CTMIN,GMCT,JGMAX)
+      IEVAL=1
+      IF (IGOTO.EQ.0) THEN
+         XX1=-10.
+         XX2=-10.
+         XXU=-10.
+         FBST=OBJ
+         ALPBST=0.
+         GBST=GMCT
+         ICAL=0
+         CALL DOT401 (NDV,X,XOLD)
+         CALL DOT401 (NDV,X,XBST)
+      ENDIF
+      IGOTO1=IGOTO+1
+      ICAL=ICAL+1
+      IF (ICAL.EQ.1) GO TO 80
+      GBST1=GBST-1.0E-6
+      IF (GBST.GT.0.0.AND.GMCT.LT.GBST1) GO TO 50
+      GBST1=GBST+1.0E-6
+      IF (GBST.GT.0.0.AND.GMCT.LE.GBST1) THEN
+         IF(ALPHA.GT.ALPBST) GO TO 50
+      ENDIF
+      IF (OBJ.LE.FBST.AND.GMCT.LE.0.) GO TO 50
+      GO TO 80
+50    FBST=OBJ
+      ALPBST=ALPHA
+      GBST=GMCT
+      CALL DOT401 (NDV,X,XBST)
+80    CONTINUE
+      GO TO (90,100,200),IGOTO1
+90    CONTINUE
+      JGOTO=0
+      II=1
+      IF (IPRNT2.GT.1) WRITE (IWRITE,370)
+100   CONTINUE
+      CALL DOT113 (JGOTO,NCON,OBJ,GMCT,ALPHA,ALPMAX,XXL,XX1,XX2,
+     1XXU,FL,F1,F2,FU,GMCTL,GMCT1,GMCT2,GMCTU,G,GGL,GG1,GG2,GGU,II,
+     2FLAST,GLAST)
+      IF (JGOTO.GT.0) THEN
+      II=II+1
+         CALL DOT114 (NDV,ALPHA,XOLD,S,XL,XU,X,SCALX)
+         IGOTO=1
+         RETURN
+      ENDIF
+      IF(II.LE.3) THEN
+         CALL DOT401(NCON,G,GGU)
+         IF(II.EQ.2) XX2=-10.
+      ENDIF
+      IF (IPRNT2.GT.1) WRITE (IWRITE,380) XXL,XXU
+      ALPU1=XXU
+      JJ=0
+      IF (II.GT.4) II=4
+      GO TO 220
+200   CONTINUE
+      IF (JJ.GE.3) GO TO 290
+      IF (II.GT.3) GO TO 210
+      XX2=ALPHA
+      F2=OBJ
+      GMCT2=GMCT
+      CALL DOT401 (NCON,G,GG2)
+      GO TO 220
+210   CONTINUE
+      XXU=ALPHA
+      FU=OBJ
+      GMCTU=GMCT
+      CALL DOT401 (NCON,G,GGU)
+220   CONTINUE
+      ALPL=XXL
+      ALPU=ALPU1
+      GMIN=MIN(GMCTL,GMCT1,GMCT2,GMCTU)
+      ALPHA=.2*XXU
+      IF (GMIN.LE.0.) GO TO 230
+      IF (II.LT.3) GO TO 250
+      ICALC=2
+      IF (II.GT.3) ICALC=4
+      YP1=0.
+      CALL DOT108 (ICALC,XXL,GMCTL,YP1,XX1,GMCT1,XX2,GMCT2,XXU,GMCTU,
+     1ALP,YMN1)
+      IF (ALP.GT.ALPL.AND.ALP.LT.ALPU) ALPHA=ALP
+      GO TO 250
+230   CONTINUE
+      CALL DOT111 (NCON,II,CTMIN,XXL,XX1,XX2,XXU,
+     1GGL,GG1,GG2,G,ALPL,ALPU)
+      IF (ALPU.LT.ALPU1) ALPHA=ALPU
+      ICALC=1
+      IF (II.EQ.3) ICALC=3
+      IF (II.GT.3) ICALC=4
+      FP1=SLOPF
+      IF(XXL.LT.ZRO) FP1=0.
+      CALL DOT108 (ICALC,XXL,FL,FP1,XX1,F1,XX2,F2,XXU,FU,ALP,YMN1)
+240   CONTINUE
+      IF (ALP.GT.ALPL.AND.ALP.LT.ALPU) ALPHA=ALP
+      IF (FU.GT.FL.AND.GMCTL.GT.0.) ALPHA=ALPL
+      IF (ALPL.GT.ALPU) ALPHA=.5*(ALPL+ALPU)
+250   CONTINUE
+      DXL=ABS(ALPHA-XXL)
+      DX1=ABS(ALPHA-XX1)
+      DX2=ABS(ALPHA-XX2)
+      DXU=ABS(ALPHA-XXU)
+      DX=MIN(DXL,DX1,DX2,DXU)
+      IEVAL=0
+      IF (DX.LE.ZRO) GO TO 290
+      JJ=II-1
+      II=II+1
+      CALL DOT114 (NDV,ALPHA,XOLD,S,XL,XU,X,SCALX)
+      IGOTO=2
+      RETURN
+290   CONTINUE
+      CALL DOT401 (NDV,XBST,X)
+      OBJ=FBST
+      GMCT=GBST
+      DXZ=ABS(ALPHA-ALPBST)
+      IF (DXZ.LE.ZRO.AND.IEVAL.EQ.1) GO TO 330
+      DXL=ABS(ALPBST-XXL)
+      DX1=ABS(ALPBST-XX1)
+      DX2=ABS(ALPBST-XX2)
+      DXU=ABS(ALPBST-XXU)
+      IF (DXL.GT.DXZ) GO TO 300
+      DXZ=DXL
+      CALL DOT401 (NCON,GGL,G)
+300   IF (DX1.GT.DXZ) GO TO 310
+      DXZ=DX1
+      CALL DOT401 (NCON,GG1,G)
+310   IF (DX2.GT.DXZ) GO TO 320
+      DXZ=DX2
+      CALL DOT401 (NCON,GG2,G)
+320   IF (DXU.GT.DXZ) GO TO 330
+      CALL DOT401 (NCON,GGU,G)
+330   CONTINUE
+      ALPHA=ALPBST
+      IGOTO=0
+      RETURN
+370   FORMAT (/,2X,'FIND BRACKETS ON MINIMUM')
+380   FORMAT (/,2X,'BRACKETS, XL =',1PE13.5,2X,'XU =',1PE13.5)
+      END
+      SUBROUTINE DOT102 (ICALC,XX1,F1,FP1,XX2,F2,AZ,A1)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IF (ICALC.EQ.1) A1=FP1
+      IF (ICALC.GT.1) A1=(F2-F1)/(XX2-XX1)
+      AZ=F1-A1*XX1
+      RETURN
+      END
+      SUBROUTINE DOT103 (ICALC,XX1,F1,FP1,XX2,F2,XX3,F3,AZ,A1,A2)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IF (ICALC.EQ.1) THEN
+         A2=((F2-F1)/(XX2-XX1)-FP1)/(XX2-XX1)
+         A1=FP1-2.*A2*XX1
+         AZ=F1-A1*XX1-A2*XX1*XX1
+         RETURN
+      ENDIF
+      A1=(F2-F1)/(XX2-XX1)
+      A2=((F3-F1)/(XX3-XX1)-A1)/(XX3-XX2)
+      A1=A1-(XX2+XX1)*A2
+      AZ=F1-A1*XX1-A2*XX1*XX1
+      RETURN
+      END
+      SUBROUTINE DOT104 (ICALC,XX1,F1,FP1,XX2,F2,XX3,F3,XX4,F4,AZ,
+     1A1,A2,A3)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      ZRO=1.0E-6
+      X21=XX2-XX1
+      X31=XX3-XX1
+      X32=XX3-XX2
+      X11=XX1**2
+      X22=XX2**2
+      X33=XX3**2
+      IF (ICALC.EQ.1) THEN
+         A3=(X21*(F3-F1)/X31-X31*(F2-F1)/X21+X32*FP1)/(X21*X31*X32)
+         A2=((F2-F1)/X21-FP1)/X21-(2.*XX1+XX2)*A3
+         A1=FP1-2.*A2*XX1-3.*A3*XX1*XX1
+         AZ=F1-XX1*(A1+XX1*(A2+A3*XX1))
+         RETURN
+      ENDIF
+      X42=XX4-XX2
+      X41=XX4-XX1
+      A3=0.
+      Q1=X33*XX3*X21-X22*XX2*X31+X11*XX1*X32
+      Q2=(XX4**3)*X21-X22*XX2*X41+X11*XX1*X42
+      Q3=X32*X21*X31
+      Q4=X42*X21*X41
+      Q5=F3*X21-F2*X31+F1*X32
+      Q6=F4*X21-F2*X41+F1*X42
+      Q7=MAX(Q1,Q2,Q3,Q4,Q5,Q6)
+      Q8=MIN(Q1,Q2,Q3,Q4,Q5,Q6)
+      IF(ABS(Q7).LT.1.0E+10.AND.ABS(Q8).LT.1.0E+10) THEN
+         DENOM=Q2*Q3-Q1*Q4
+         ANUM=Q3*Q6-Q4*Q5
+         CHK=ZRO*ANUM
+         IF (ABS(CHK).LT.ABS(DENOM).AND.ABS(DENOM).GT.1.0E-15)
+     *   A3=ANUM/DENOM
+      ENDIF
+      A2=(Q5-Q1*A3)/Q3
+      A1=(F2-F1)/X21-(X22*XX2-X11*XX1)*A3/X21-(XX1+XX2)*A2
+      AZ=F1-XX1*(A1+XX1*(A2+XX1*A3))
+      RETURN
+      END
+      SUBROUTINE DOT105 (ICALC,AZ,A1,A2,A3,XZ1,XZ2,XZ3)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      ZRO=1.0E-6
+      ZRO10=10.*ZRO
+      XZ1=-1.0E+20
+      XZ2=-1.0E+20
+      XZ3=-1.0E+20
+      IF (ICALC.GT.1) GO TO 20
+10    CONTINUE
+      IF (ABS(A1).GT.ZRO) XZ1=-AZ/A1
+      RETURN
+20    IF (ICALC.GT.2) GO TO 40
+30    CONTINUE
+      IF (ABS(A2).LT.ZRO10) GO TO 10
+      B=A1**2-4.*A2*AZ
+      IF (B.LT.-1.0E-6) RETURN
+      IF (B.LT.0.) B=0.
+      XX=0.
+      YY=0.
+      IF (ABS(A2).GT.ZRO) XX=-.5*A1/A2
+      IF (ABS(A2).GT.ZRO) YY=.5*SQRT(B)/A2
+      X1=XX+YY
+      X2=XX-YY
+      XZ1=MIN(X1,X2)
+      XZ2=MAX(X1,X2)
+      RETURN
+40    CONTINUE
+      IF (ABS(A3).LT.ZRO10.OR.ABS(A3).GT.1.0E+20) GO TO 30
+      X=0.
+      IF (ABS(A1).GT.ZRO) X=-AZ/A1
+      KOUNT=0
+      YY1=ABS(AZ)+ABS(A1)+ABS(A2)+ABS(A3)
+50    CONTINUE
+      YY2=ABS(X)+ZRO
+      YY2=3.*LOG10(YY2)*YY1
+      IF(YY2.GT.30) RETURN
+      Y=AZ+X*(A1+X*(A2+X*A3))
+      YP=A1+X*(2.*A2+3.*X*A3)
+      IF (ABS(YP).LT.1.) YP=0.9*YP/(ABS(YP)+ZRO)
+      IF (ABS(YP).LT.ZRO) YP=ZRO
+      DX=-Y/YP
+      P1M2=.01
+      DEL=MAX(ABS(X),P1M2)
+      DEL=ABS(DX)/DEL
+      KOUNT=KOUNT+1
+      IF(KOUNT.GT.50) RETURN
+      IF (DEL.LT.ZRO) GO TO 60
+      X=X+DX
+      GO TO 50
+60    XZ1=X
+      B3=A3
+      B2=A2+XZ1*A3
+      B1=A1+XZ1*B2
+      IF (ABS(B2).GT.ZRO) XZ2=-B1/B2
+      IF (ABS(B3).LT.ZRO10) GO TO 80
+      AC=B2*B2-4.*B3*B1
+      IF (AC.LT.0.) THEN
+         XZ2=-1.0E+20
+         RETURN
+      ENDIF
+      AC=SQRT(AC)
+      IF (ABS(B3).GT.ZRO) XZ2=(-B2+AC)/(2.*B3)
+      IF (ABS(B3).GT.ZRO) XZ3=(-B2-AC)/(2.*B3)
+80    CONTINUE
+      IF (XZ2.LE.XZ1) THEN
+         TMP=XZ1
+         XZ1=XZ2
+         XZ2=TMP
+      ENDIF
+      IF (XZ3.LE.XZ1) THEN
+         TMP=XZ1
+         XZ1=XZ3
+         XZ3=TMP
+      ENDIF
+      IF (XZ2.GE.XZ3) THEN
+         TMP=XZ3
+         XZ3=XZ2
+         XZ2=TMP
+      ENDIF
+      RETURN
+      END
+      SUBROUTINE DOT106 (ICALC,A1,A2,A3,XMN1,XMX1)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      ZRO=1.0E-6
+      ZRO10=10.*ZRO
+      XMN1=-1.0E+20
+      XMX1=-1.0E+20
+      IF (ICALC.LT.2) RETURN
+      IF (ICALC.GT.2) GO TO 20
+10    CONTINUE
+      IF (ABS(A2).LT.ZRO) RETURN
+      XX=-.5*A1/A2
+      IF (A2.GT.0.) XMN1=XX
+      IF (A2.LT.0.) XMX1=XX
+      RETURN
+20    CONTINUE
+      IF (ABS(A3).LT.ZRO10) GO TO 10
+      B=A2**2-3.*A1*A3
+      IF (B.GE.-1.0E-6) THEN
+         IF (B.LT.0.) B=0.
+         B=SQRT(B)
+         XMN1=(-A2+B)/(3.*A3)
+         XMX1=(-A2-B)/(3.*A3)
+      ENDIF
+      RETURN
+      END
+      SUBROUTINE DOT107 (N,A,X,Y)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(*)
+      Y=A(1)
+      IF (N.LT.1) RETURN
+      XX=1.
+      DO 10 I=1,N
+         XLGX=ABS(X)
+         XLGXX=ABS(XX)
+         XLG=LOG10(XLGX)+LOG10(XLGXX)
+         IF(ABS(XLG).GT.30) RETURN
+         IP1=I+1
+         XX=XX*X
+         Y=Y+XX*A(IP1)
+10    CONTINUE
+      RETURN
+      END
+      SUBROUTINE DOT108 (ICALC,XX1,F1,FP1,XX2,F2,XX3,F3,XX4,F4,
+     1XMN1,FMN1)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(4)
+      AZ=0.
+      IF (ICALC.LE.2) THEN
+         CALL DOT103 (ICALC,XX1,F1,FP1,XX2,F2,XX3,F3,AZ,A1,A2)
+         A3=0.
+         JCALC=2
+      ENDIF
+      IF(ICALC.GT.2) THEN
+         JCALC=ICALC-2
+         CALL DOT104 (JCALC,XX1,F1,FP1,XX2,F2,XX3,F3,XX4,F4,AZ,A1,
+     1   A2,A3)
+         JCALC=3
+      ENDIF
+      CALL DOT106 (JCALC,A1,A2,A3,XMN1,XMX1)
+      FMN1=-1.0E+20
+      IF (XMN1.LT.-0.9E+20) RETURN
+      N=3
+      IF (ICALC.LT.3) N=2
+      A(1)=AZ
+      A(2)=A1
+      A(3)=A2
+      A(4)=A3
+      IF(XMN1.GT.0.) CALL DOT107 (N,A,XMN1,FMN1)
+      RETURN
+      END
+      SUBROUTINE DOT109 (ICALC,XX1,F1,FP1,XX2,F2,XX3,F3,XX4,F4,XZ1,
+     1Z1,ZP1,XZ2,Z2,ZP2,XZ3,Z3,ZP3)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION AA(4)
+      A2=0.
+      A3=0.
+      GO TO (10,10,20,20,30,30), ICALC
+10    CONTINUE
+      JCALC=ICALC
+      CALL DOT102 (JCALC,XX1,F1,FP1,XX2,F2,AZ,A1)
+      GO TO 40
+20    CONTINUE
+      JCALC=ICALC-2
+      CALL DOT103 (JCALC,XX1,F1,FP1,XX2,F2,XX3,F3,AZ,A1,A2)
+      GO TO 40
+30    CONTINUE
+      JCALC=ICALC-4
+      CALL DOT104 (JCALC,XX1,F1,FP1,XX2,F2,XX3,F3,XX4,F4,AZ,A1,A2,
+     1A3)
+40    CONTINUE
+      JCALC=(ICALC+1)/2
+      CALL DOT105 (JCALC,AZ,A1,A2,A3,XZ1,XZ2,XZ3)
+      Z1=-1.0E+20
+      Z2=-1.0E+20
+      Z3=-1.0E+20
+      ZP1=-1.0E+20
+      ZP2=-1.0E+20
+      ZP3=-1.0E+20
+      AA(1)=AZ
+      AA(2)=A1
+      AA(3)=A2
+      AA(4)=A3
+      N=(ICALC+1)/2
+      XMAX=MAX(XX1,XX2,XX3,XX4)
+      IF(XZ1.GT.0.0.AND.XZ1.LE.XMAX) CALL DOT107 (N,AA,XZ1,Z1)
+      IF(XZ2.GT.0.0.AND.XZ2.LE.XMAX) CALL DOT107 (N,AA,XZ2,Z2)
+      IF(XZ3.GT.0.0.AND.XZ3.LE.XMAX) CALL DOT107 (N,AA,XZ3,Z3)
+      IF(XZ1.GT.0.0.AND.XZ1.LE.XMAX) CALL DOT110(N,AA,XZ1,ZP1)
+      IF(XZ2.GT.0.0.AND.XZ2.LE.XMAX) CALL DOT110(N,AA,XZ2,ZP2)
+      IF(XZ3.GT.0.0.AND.XZ3.LE.XMAX) CALL DOT110(N,AA,XZ3,ZP3)
+      RETURN
+      END
+      SUBROUTINE DOT110 (N,A,X,YP)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(*)
+      YP=0.
+      IF (N.LT.1) RETURN
+      YP=A(2)
+      IF(N.LT.2) RETURN
+      XX=1.
+      DO 10 I=2,N
+         XLG=LOG10(X)+LOG10(XX)
+         IF(ABS(XLG).GT.30) RETURN
+         IP1=I+1
+         XX=XX*X
+         YP=YP+FLOAT(I)*A(IP1)*XX
+10    CONTINUE
+      RETURN
+      END
+      SUBROUTINE DOT111 (NCON,NX,CTMIN,XX1,XX2,XX3,
+     1XX4,GGL,GG1,GG2,GGU,ALPL,ALPU)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION GGL(*),GG1(*),GG2(*),GGU(*)
+      ZRO=1.0E-6
+      ALPL1=ALPL
+      ALPU1=ALPU
+      DO 40 I=1,NCON
+         FP1=0.
+         CC=CTMIN
+         F1=GGL(I)
+         IF (ABS(F1).LE.CC) GO TO 40
+         F2=GG1(I)
+         F3=0.
+         F4=0.
+         IF (NX.GE.3) F3=GG2(I)
+         IF (NX.GE.4) F4=GGU(I)
+         AF1=ABS(F1)
+         AF2=ABS(F2)
+         AF3=ABS(F3)
+         AF4=ABS(F4)
+         AF=MAX(AF1,AF2,AF3,AF4)
+         IF (AF.LE.CC) GO TO 40
+         IF(NX.LT.2) GO TO 40
+         ICALC=2*(NX-1)
+         IF (ICALC.GT.6) ICALC=6
+         CALL DOT109 (ICALC,XX1,F1,FP1,XX2,F2,XX3,F3,XX4,F4,XZ1,Z1,
+     1   ZP1,XZ2,Z2,ZP2,XZ3,Z3,ZP3)
+         DO 30 II=1,3
+            XZ=XZ1
+            ZP=ZP1
+            IF (II.EQ.2) XZ=XZ2
+            IF (II.EQ.2) ZP=ZP2
+            IF (II.EQ.3) XZ=XZ3
+            IF (II.EQ.3) ZP=ZP3
+            IF (ABS(XZ).GT.0.9E+20) GO TO 30
+            IF (F1.LE.CC) GO TO 20
+            IF (XZ.GT.ALPL.AND.ZP.LT.0.) ALPL=XZ
+            GO TO 30
+20          CONTINUE
+            IF (XZ.LT.ALPL1) GO TO 30
+            IF (XZ.LT.ALPU.AND.ZP.GT.0.) ALPU=XZ
+            IF (FP1.GT.ZRO) GO TO 30
+            IF (XZ.LT.ALPU.AND.(F1.LT.0.0.AND.ZP.GT.0.)) ALPU=XZ
+30       CONTINUE
+40    CONTINUE
+      IF (ALPL.GT.ALPU1) ALPL=ALPU1
+      RETURN
+      END
+      SUBROUTINE DOT112 (NDV,X,S,XL,XU,ALPMAX,SCALX)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION X(*),S(*),XL(*),XU(*),SCALX(*)
+      ZRO=1.0E-6
+      ALPMAX=0.
+      DO 10 I=1,NDV
+         IF (ABS(S(I)).LE.ZRO) GO TO 10
+         ALP=(SCALX(I)*XU(I)-X(I))/S(I)
+         IF (ALP.GT.ALPMAX) ALPMAX=ALP
+         ALP=(SCALX(I)*XL(I)-X(I))/S(I)
+         IF (ALP.GT.ALPMAX) ALPMAX=ALP
+10    CONTINUE
+      IF(ALPMAX.GT.1000.) ALPMAX=1000.
+      RETURN
+      END
+      SUBROUTINE DOT113 (JGOTO,NCON,OBJ,GMCT,ALPHA,ALPMAX,XXL,XX1,
+     1XX2,XXU,FL,F1,F2,FU,GL,G1,G2,GU,G,GGL,GG1,GG2,GGU,II,FLAST,GLAST)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION G(*),GGL(*),GG1(*),GG2(*),GGU(*)
+      JGOTO1=JGOTO+1
+      GO TO (5,10,12,14,16),JGOTO1
+5     CONTINUE
+      XXL=0.
+      FL=OBJ
+      FLAST=OBJ
+      GL=GMCT
+      GLAST=GL
+      F1=FL
+      G1=GL
+      F2=FL
+      G2=GL
+      CALL DOT401 (NCON,G,GGL)
+      IF (ALPHA.GT.ALPMAX) ALPHA=ALPMAX
+      JGOTO=1
+      RETURN
+10    CONTINUE
+      XX1=ALPHA
+      F1=OBJ
+      G1=GMCT
+      CALL DOT401(NCON,G,GG1)
+      GO TO 18
+12    CONTINUE
+      XX2=ALPHA
+      F2=OBJ
+      G2=GMCT
+      CALL DOT401(NCON,G,GG2)
+      GO TO 18
+14    CONTINUE
+      XXU=ALPHA
+      FU=OBJ
+      GU=GMCT
+      CALL DOT401(NCON,G,GGU)
+      GO TO 18
+16    CONTINUE
+      XXL=XX1
+      XX1=XX2
+      XX2=XXU
+      XXU=ALPHA
+      FL=F1
+      F1=F2
+      F2=FU
+      FU=OBJ
+      GL=G1
+      G1=G2
+      G2=GU
+      GU=GMCT
+      CALL DOT401(NCON,GG1,GGL)
+      CALL DOT401(NCON,GG2,GG1)
+      CALL DOT401(NCON,GGU,GG2)
+      CALL DOT401(NCON,G,GGU)
+18    CONTINUE
+      IF (ALPHA.GE.(0.999999*ALPMAX)) GO TO 40
+      IF (GMCT.LE.0.0.AND.GLAST.LE.0.0) GO TO 20
+      IF (GMCT.GT.GLAST) GO TO 40
+      IF (GMCT.GT.0.) GO TO 30
+20    CONTINUE
+      IF (OBJ.GT.FLAST) GO TO 40
+30    CONTINUE
+      XMULT=2.618034
+      ALPHA=XMULT*ALPHA
+      FLAST=OBJ
+      GLAST=GMCT
+      IF (ALPHA.GT.ALPMAX) ALPHA=ALPMAX
+      JGOTO=MIN(II,4)
+      RETURN
+40    CONTINUE
+      JGOTO=0
+      XXU=ALPHA
+      RETURN
+      END
+      SUBROUTINE DOT114 (NDV,ALPHA,XOLD,S,XL,XU,X,SCALX)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION XOLD(*),S(*),XL(*),XU(*),X(*),SCALX(*)
+      DO 10 I=1,NDV
+         SCALI=SCALX(I)
+         X(I)=XOLD(I)+ALPHA*S(I)
+         A1=X(I)-XL(I)*SCALI
+         IF(A1.LE.0.0) X(I)=XL(I)*SCALI
+         A1=SCALI*XU(I)-X(I)
+         IF(A1.LE.0.0) X(I)=XU(I)*SCALI
+10    CONTINUE
+      RETURN
+      END
+      SUBROUTINE DOT115 (IGOTO,IPRNT2,NDV,OBJ,SLOPE,ALPHA,ALPMAX,
+     1XOLD,XL,XU,S,X,XBST,IWRITE,SCALX,ALPBST,ALPL,ALPU,F1,F2,FBST,
+     2FL,FU,XX1,XX2,XXL,XXU,ICAL,II,JGOTO)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION X(*),S(*),XOLD(*),XL(*),XU(*),XBST(*),SCALX(*)
+      IF (IGOTO.GT.0) GO TO 10
+      ICAL=1
+      ALPL=0.
+      ALPU=ALPMAX
+      ALPBST=0.
+      FBST=OBJ
+      CALL DOT401 (NDV,X,XBST)
+      CALL DOT401 (NDV,X,XOLD)
+      GO TO 20
+10    CONTINUE
+      ICAL=ICAL+1
+      IF (OBJ.GT.FBST) GO TO 20
+         IF (ALPBST.GT.ALPL.AND.ALPBST.LT.ALPHA) ALPL=ALPBST
+         IF (ALPBST.LT.ALPU.AND.ALPBST.GT.ALPHA) ALPU=ALPBST
+         ALPBST=ALPHA
+         FBST=OBJ
+         CALL DOT401 (NDV,X,XBST)
+20    CONTINUE
+      IGOTO1=IGOTO+1
+      GO TO (30,40,90), IGOTO1
+30    CONTINUE
+      JGOTO=0
+      IF (IPRNT2.GT.1) WRITE (IWRITE,160)
+40    CONTINUE
+      CALL DOT116 (JGOTO,OBJ,ALPHA,ALPMAX,XXL,XX1,XX2,XXU,FL,F1,
+     *F2,FU)
+      IF (JGOTO.EQ.0) GO TO 50
+      CALL DOT114 (NDV,ALPHA,XOLD,S,XL,XU,X,SCALX)
+      IGOTO=1
+      RETURN
+50    CONTINUE
+      IF (IPRNT2.GT.1) WRITE (IWRITE,170) XXL,XXU
+      II=ICAL
+      IF (II.GT.4) II=4
+      JGOTO=0
+      IF (II.NE.3) GO TO 90
+      XX1=XX2
+      F1=F2
+90    CONTINUE
+      CALL DOT117 (JGOTO,II,XXL,XX1,XX2,XXU,FL,F1,F2,FU,SLOPE,
+     *ALPHA,OBJ)
+      IF (JGOTO.EQ.0) GO TO 100
+      CALL DOT114 (NDV,ALPHA,XOLD,S,XL,XU,X,SCALX)
+      IGOTO=2
+      RETURN
+100   CONTINUE
+      ALPHA=ALPBST
+      OBJ=FBST
+      CALL DOT401 (NDV,XBST,X)
+      IGOTO=0
+      RETURN
+160   FORMAT (/,2X,'FIND BRACKETS ON MINIMUM')
+170   FORMAT (/,2X,'BRACKETS, XL =',1PE13.5,2X,'XU =',1PE13.5)
+      END
+      SUBROUTINE DOT116 (JGOTO,OBJ,ALPHA,ALPMAX,XXL,XX1,XX2,XXU,
+     1FL,F1,F2,FU)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IF (JGOTO.GT.0) GO TO 10
+      XXL=0.
+      FL=OBJ
+      XX1=0.
+      F1=OBJ
+      XX2=0.
+      F2=OBJ
+      IF (ALPHA.GT.ALPMAX) ALPHA=ALPMAX
+      XXU=ALPHA
+      JGOTO=1
+      RETURN
+10    CONTINUE
+      FU=OBJ
+      IF (ALPHA.GE.(0.99999*ALPMAX)) GO TO 20
+      IF (OBJ.GE.F2) GO TO 20
+      XMULT=2.618034
+      ALPHA=XXU*XMULT
+      XXL=XX1
+      XX1=XX2
+      XX2=XXU
+      FL=F1
+      F1=F2
+      F2=FU
+      IF (ALPHA.GT.ALPMAX) ALPHA=ALPMAX
+      XXU=ALPHA
+      JGOTO=1
+      RETURN
+20    CONTINUE
+      JGOTO=0
+      RETURN
+      END
+      SUBROUTINE DOT117 (IGOTO,II,XXL,XX1,XX2,XXU,FL,F1,F2,FU,SLOPE,
+     1ALPHA,OBJ)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      ZRO=1.0E-6
+      YP1=0.0
+      A3=0.0
+      XX=0.0
+      YY=0.0
+      IGOTO1=IGOTO+1
+      GO TO (10,30,80,100), IGOTO1
+10    CONTINUE
+      IF (II.GT.2) GO TO 40
+      FA=FL+2.*ABS(FL)
+      XX1=.5*XXU
+      IF (FU.GT.FA) XX1=.1*XXU
+      ICALC=1
+      XX=0.
+      YY=0.
+      CALL DOT103 (ICALC,XXL,FL,SLOPE,XXU,FU,XX,YY,AZ,A1,A2)
+      ICALC=2
+      A3=0.
+      CALL DOT106 (ICALC,A1,A2,A3,XMN1,XMX1)
+      IF (XMN1.GT.XXL.AND.XMN1.LT.XXU) XX1=XMN1
+      ALPHA=XX1
+      IGOTO=1
+      RETURN
+30    CONTINUE
+      F1=OBJ
+40    CONTINUE
+      IF (II.GT.3) GO TO 90
+      IF (SLOPE.LT.-0.01) GO TO 50
+      ICALC=2
+      YP1=0.
+      CALL DOT103 (ICALC,XXL,FL,YP1,XX1,F1,XXU,FU,AZ,A1,A2)
+      GO TO 60
+50    CONTINUE
+      ICALC=1
+      CALL DOT104 (ICALC,XXL,FL,SLOPE,XX1,F1,XXU,FU,XX,YY,AZ,A1,
+     *A2,A3)
+      ICALC=3
+60    CONTINUE
+      CALL DOT106 (ICALC,A1,A2,A3,XMN1,XMX1)
+      XX2=.5*(XXU+XX1)
+      IF (F1.LT.FL) GO TO 70
+         FA=FL+2.*ABS(FL)
+         XX2=.5*(XXL+XX1)
+         IF (F1.GT.FA) XX2=XXL+.1*(XX1-XXL)
+70    CONTINUE
+      IF (XMN1.GT.XXL.AND.XMN1.LT.XXU) XX2=XMN1
+      ALPHA=XX2
+      DXL=ABS(XX2-XXL)
+      DX1=ABS(XX2-XX1)
+      DXU=ABS(XX2-XXU)
+      DX=MIN(DXL,DX1,DXU)
+      IF (DX.LE.ZRO) GO TO 100
+         IGOTO=2
+         RETURN
+80       CONTINUE
+         F2=OBJ
+90       CONTINUE
+         ICALC=2
+         CALL DOT104 (ICALC,XXL,FL,SLOPE,XX1,F1,XX2,F2,XXU,FU,AZ,A1,
+     *   A2,A3)
+         ICALC=3
+         CALL DOT106 (ICALC,A1,A2,A3,ALPHA,XMX1)
+         IF (ALPHA.LE.XXL.OR.ALPHA.GE.XXU) GO TO 100
+         DXL=ABS(ALPHA-XXL)
+         DX1=ABS(ALPHA-XX1)
+         DX2=ABS(ALPHA-XX2)
+         DXU=ABS(ALPHA-XXU)
+         DX=MIN(DXL,DX1,DX2,DXU)
+         IF (DX.LE.ZRO) GO TO 100
+            IGOTO=3
+            RETURN
+100   CONTINUE
+      IGOTO=0
+      RETURN
+      END
+      SUBROUTINE DOT126 (IGOTO,OBJ,ALPHA,ALPMAX,DELALP,DABALP,XL,
+     1X1,X2,XU,FL,F1,F2,FU,II,IX,NITER)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IGOTO1=IGOTO+1
+      GO TO (10,20,40,45,50), IGOTO1
+10    CONTINUE
+      X1=XL+0.38196601*(XU-XL)
+      X2=XU-0.38196601*(XU-XL)
+      ALPHA=X1
+      IGOTO=1
+      RETURN
+20    CONTINUE
+      F1=OBJ
+30    CONTINUE
+      ALPHA=X2
+      IGOTO=2
+      RETURN
+40    CONTINUE
+      F2=OBJ
+      OBJ=FU
+      ALPHA=XU
+45    CONTINUE
+      FU=OBJ
+      IF(FU.LT.F2.AND.ALPHA.LT.ALPMAX) THEN
+         ALPHA=X2+2.618034*(XU-X2)
+         XL=X1
+         X1=X2
+         X2=XU
+         FL=F1
+         F1=F2
+         F2=FU
+         XU=ALPHA
+         IGOTO=3
+         RETURN
+      ENDIF
+      DAB=DELALP*(XU-XL)
+      IF (DAB.LT.DABALP) DAB=DABALP
+      IF (DAB.LT.1.0E-6) DAB=1.0E-6
+      EPS=DAB/(XU-XL)
+      AITER=-2.0780869*LOG(EPS)
+      NITER=AITER
+      II=0
+      IX=0
+50    II=II+1
+      IF (IX.EQ.1) F1=OBJ
+      IF (IX.EQ.2) F2=OBJ
+      IF (II.GT.NITER) GO TO 60
+      CALL DOT127 (XL,X1,X2,XU,FL,F1,F2,FU,IX)
+      ALPHA=X1
+      IF (IX.GT.1) ALPHA=X2
+      IGOTO=4
+      RETURN
+60    CONTINUE
+      ALPHA=XL
+      OBJ=FL
+      IF (F1.LT.OBJ) THEN
+         ALPHA=X1
+         OBJ=F1
+      ENDIF
+      IF (F2.LT.OBJ) THEN
+         ALPHA=X2
+         OBJ=F2
+      ENDIF
+      IF (FU.LT.OBJ) THEN
+         ALPHA=XU
+         OBJ=FU
+      ENDIF
+      IGOTO=0
+      RETURN
+      END
+      SUBROUTINE DOT127 (XL,X1,X2,XU,FL,F1,F2,FU,IX)
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IF (F2.LE.F1) THEN
+         XL=X1
+         FL=F1
+         X1=X2
+         F1=F2
+         X2=XU-0.38196601*(XU-XL)
+         IX=2
+      ELSE
+         XU=X2
+         FU=F2
+         X2=X1
+         F2=F1
+         X1=XL+0.38196601*(XU-XL)
+         IX=1
+      ENDIF
+      RETURN
+      END

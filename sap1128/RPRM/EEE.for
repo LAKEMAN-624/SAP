@@ -1,0 +1,31 @@
+      SUBROUTINE TOT(MINMAX,NCON,NRWK,NDV,INFO,
+     1NRIWK,OBJ,X,XL,XU,G,RPRM,IPRM,WK,IWK)
+       !DEC$ ATTRIBUTES DLLEXPORT :: TOT      
+       !DEC$ ATTRIBUTES STDCALL,ALIAS:'TOT'::TOT
+       !DEC$ ATTRIBUTES REFERENCE::OBJ,X,XL,XU,G,RPRM,IPRM,WK
+       !DEC$ ATTRIBUTES REFERENCE::IWK,MINMAX,NCON
+      !DEC$ ATTRIBUTES REFERENCE::NRWK,NRIWK,NDV,INFO
+C
+C                 ***** (C) COPYRIGHT *****
+C     ***** VANDERPLAATS RESEARCH & DEVELOPMENT, INC. *****
+C         ***** ALL RIGHTS RESERVED, WORLDWIDE *****
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION X(*),XL(*),XU(*),G(*),RPRM(*),IPRM(*),WK(*),
+     1IWK(*),IPOINT(40),DUMMY(1)
+      NCON=3
+      MINMAX=4
+      NRWK=5
+      NDV=6
+      INFO=7
+      DO 20 I=1,2
+      X(I)=20.0
+       XL(I)=30.0
+        XU(I)=10.0
+        G(I)=14.0
+20     CONTINUE
+       DO 10 I=1,20
+          RPRM(I)=1.0
+10     IPRM(I)=1
+       OBJ=3.0*5.0
+      RETURN
+      END
